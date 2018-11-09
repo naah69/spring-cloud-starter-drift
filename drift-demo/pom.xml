@@ -34,7 +34,7 @@
 
         <dependency>
             <groupId>com.naah69</groupId>
-            <artifactId>spring-cloud-starter-drift</artifactId>
+            <artifactId>spring-cloud-starter-drift-client</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
