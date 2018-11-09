@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- %m输出的信息,%p日志级别,%t线程名,%d日期,%c类的全名,,,, -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!--<pattern>%d %p (%file:%line\)- %m%n</pattern>-->
+            <!--格式化输出：%d:表示日期    %thread:表示线程名     %-5level:级别从左显示5个字符宽度  %msg:日志消息    %n:是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger Line:%-3L - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <property name="APPLICATION" value="drift-calculator-client"/>
+    <property name="LOG_PATH" value="log"/>
+    <contextName>${APPLICATION}</contextName>
+    <!--
+          说明：
+          1、日志级别及文件
+              日志记录采用分级记录，级别与日志文件名相对应，不同级别的日志信息记录到不同的日志文件中
+              例如：error级别记录到log_error_xxx.log或log_error.log（该文件为当前记录的日志文件），而log_error_xxx.log为归档日志，
+              日志文件按日期记录，同一天内，若日志文件大小等于或大于2M，则按0、1、2...顺序分别命名
+              例如log-level-2013-12-21.0.log
+              其它级别的日志也是如此。
+          2、文件路径
+              若开发、测试用，在Eclipse中运行项目，则到Eclipse的安装路径查找logs文件夹，以相对路径../logs。
+              若部署到Tomcat下，则在Tomcat下的logs文件中
+          3、Appender
+              FILEERROR对应error级别，文件名以log-error-xxx.log形式命名
+              FILEWARN对应warn级别，文件名以log-warn-xxx.log形式命名
+              FILEINFO对应info级别，文件名以log-info-xxx.log形式命名
+              FILEDEBUG对应debug级别，文件名以log-debug-xxx.log形式命名
+              CONSOLE将日志信息输出到控制上，为方便开发测试使用
+       -->
+    <!-- 日志记录器，日期滚动记录 -->
+    <appender name="FILEERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <!-- 如果只是想要 Error 级别的日志，那么需要过滤一下，默认是 info 级别的，ThresholdFilter-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!--过滤 Error-->
+            <level>error</level>
+            <!--匹配到就允许-->
+            <onMatch>ACCEPT</onMatch>
+            <!--没有匹配到就禁止-->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <!--日志名称，如果没有File 属性，那么只会使用FileNamePattern的文件路径规则
+            如果同时有<File>和<FileNamePattern>，那么当天日志是<File>，明天会自动把今天
+            的日志改名为今天的日期。即，<File> 的日志都是当天的。
+        -->
+        <file>${LOG_PATH}/${APPLICATION}_log_error.log</file>
+        <!-- 日志记录器的滚动策略，按日期，按大小记录 SizeAndTimeBasedRollingPolicy-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--文件路径,定义了日志的切分方式——把每一天的日志归档到一个文件中,以防止日志填满整个磁盘空间-->
+            <!-- 归档的日志文件的路径，例如今天是2013-12-21日志，当前写的日志文件路径为file节点指定，可以将此文件与file指定文件路径设置为不同路径，从而将当前日志文件或归档日志文件置不同的目录。
+            而2013-12-21的日志文件在由fileNamePattern指定。%d{yyyy-MM-dd}指定日期格式，%i指定索引 -->
+            <fileNamePattern>${LOG_PATH}/error/${APPLICATION}-log-error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 除按日志记录之外，还配置了日志文件不能超过2M，若超过2M，日志文件会以索引0开始，命名日志文件，例如log-error-2013-12-21.0.log -->
+            <maxFileSize>${LOG_FILE_MAX_SIZE:-200MB}</maxFileSize>
+            <!--只保留最近15天的日志-->
+            <maxHistory>${LOG_FILE_MAX_HISTORY:-15}</maxHistory>
+        </rollingPolicy>
+        <!-- 追加方式记录日志 -->
+        <append>true</append>
+        <!--日志输出编码格式化-->
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{39} Line:%-3L - %msg%n</pattern>
+        </encoder>
+
+    </appender>
+
+    <!-- 日志记录器，日期滚动记录 -->
+    <appender name="FILEWARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 如果只是想要 Error 级别的日志，那么需要过滤一下，默认是 info 级别的，ThresholdFilter-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!--过滤 warn-->
+            <level>warn</level>
+            <!--匹配到就允许-->
+            <onMatch>ACCEPT</onMatch>
+            <!--没有匹配到就禁止-->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <!--日志名称，如果没有File 属性，那么只会使用FileNamePattern的文件路径规则
+            如果同时有<File>和<FileNamePattern>，那么当天日志是<File>，明天会自动把今天
+            的日志改名为今天的日期。即，<File> 的日志都是当天的。
+        -->
+        <file>${LOG_PATH}/${APPLICATION}_log_warn.log</file>
+        <!-- 日志记录器的滚动策略，按日期，按大小记录 SizeAndTimeBasedRollingPolicy-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--文件路径,定义了日志的切分方式——把每一天的日志归档到一个文件中,以防止日志填满整个磁盘空间-->
+            <!-- 归档的日志文件的路径，例如今天是2013-12-21日志，当前写的日志文件路径为file节点指定，可以将此文件与file指定文件路径设置为不同路径，从而将当前日志文件或归档日志文件置不同的目录。
+            而2013-12-21的日志文件在由fileNamePattern指定。%d{yyyy-MM-dd}指定日期格式，%i指定索引 -->
+            <fileNamePattern>${LOG_PATH}/warn/${APPLICATION}-log-warn-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 除按日志记录之外，还配置了日志文件不能超过2M，若超过2M，日志文件会以索引0开始，命名日志文件，例如log-error-2013-12-21.0.log -->
+            <maxFileSize>${LOG_FILE_MAX_SIZE:-200MB}</maxFileSize>
+            <!--只保留最近15天的日志-->
+            <maxHistory>${LOG_FILE_MAX_HISTORY:-15}</maxHistory>
+        </rollingPolicy>
+        <!-- 追加方式记录日志 -->
+        <append>true</append>
+        <!--日志输出编码格式化-->
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{39} Line:%-3L - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 日志记录器，日期滚动记录 -->
+    <appender name="FILEINFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 此日志文件只记录info级别的 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!--过滤 info-->
+            <level>info</level>
+            <!--匹配到就允许-->
+            <onMatch>ACCEPT</onMatch>
+            <!--没有匹配到就禁止-->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <!--日志名称，如果没有File 属性，那么只会使用FileNamePattern的文件路径规则
+            如果同时有<File>和<FileNamePattern>，那么当天日志是<File>，明天会自动把今天
+            的日志改名为今天的日期。即，<File> 的日志都是当天的。
+        -->
+        <file>${LOG_PATH}/${APPLICATION}_log_info.log</file>
+        <!-- 日志记录器的滚动策略，按日期，按大小记录 SizeAndTimeBasedRollingPolicy-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 归档的日志文件的路径，例如今天是2013-12-21日志，当前写的日志文件路径为file节点指定，可以将此文件与file指定文件路径设置为不同路径，从而将当前日志文件或归档日志文件置不同的目录。
+            而2013-12-21的日志文件在由fileNamePattern指定。%d{yyyy-MM-dd}指定日期格式，%i指定索引 -->
+            <fileNamePattern>${LOG_PATH}/info/${APPLICATION}-log-info-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!--只保留最近15天的日志-->
+            <maxHistory>${LOG_FILE_MAX_HISTORY:-15}</maxHistory>
+        </rollingPolicy>
+        <!-- 追加方式记录日志 -->
+        <append>true</append>
+        <!--日志输出编码格式化-->
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{39} Line:%-3L - %msg%n</pattern>
+        </encoder>
+
+    </appender>
+
+
+    <!-- 日志记录器，日期滚动记录 -->
+    <appender name="FILETRACE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 此日志文件只记录info级别的 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!--过滤 info-->
+            <level>trace</level>
+            <!--匹配到就允许-->
+            <onMatch>ACCEPT</onMatch>
+            <!--没有匹配到就禁止-->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <!--日志名称，如果没有File 属性，那么只会使用FileNamePattern的文件路径规则
+            如果同时有<File>和<FileNamePattern>，那么当天日志是<File>，明天会自动把今天
+            的日志改名为今天的日期。即，<File> 的日志都是当天的。
+        -->
+        <file>${LOG_PATH}/${APPLICATION}_log_trace.log</file>
+        <!-- 日志记录器的滚动策略，按日期，按大小记录 SizeAndTimeBasedRollingPolicy-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 归档的日志文件的路径，例如今天是2013-12-21日志，当前写的日志文件路径为file节点指定，可以将此文件与file指定文件路径设置为不同路径，从而将当前日志文件或归档日志文件置不同的目录。
+            而2013-12-21的日志文件在由fileNamePattern指定。%d{yyyy-MM-dd}指定日期格式，%i指定索引 -->
+            <fileNamePattern>${LOG_PATH}/info/${APPLICATION}-log-trace-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!--只保留最近15天的日志-->
+            <maxHistory>${LOG_FILE_MAX_HISTORY:-15}</maxHistory>
+        </rollingPolicy>
+        <!-- 追加方式记录日志 -->
+        <append>true</append>
+        <!--日志输出编码格式化-->
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{39} Line:%-3L - %msg%n</pattern>
+        </encoder>
+
+    </appender>
+
+    <!-- 日志记录器，日期滚动记录 -->
+    <appender name="ALLLOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--日志名称，如果没有File 属性，那么只会使用FileNamePattern的文件路径规则
+            如果同时有<File>和<FileNamePattern>，那么当天日志是<File>，明天会自动把今天
+            的日志改名为今天的日期。即，<File> 的日志都是当天的。
+        -->
+        <file>${LOG_PATH}/${APPLICATION}.log</file>
+        <!-- 日志记录器的滚动策略，按日期，按大小记录 SizeAndTimeBasedRollingPolicy-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 归档的日志文件的路径，例如今天是2013-12-21日志，当前写的日志文件路径为file节点指定，可以将此文件与file指定文件路径设置为不同路径，从而将当前日志文件或归档日志文件置不同的目录。
+            而2013-12-21的日志文件在由fileNamePattern指定。%d{yyyy-MM-dd}指定日期格式，%i指定索引 -->
+            <fileNamePattern>${LOG_PATH}/all/${APPLICATION}-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!--只保留最近15天的日志-->
+            <maxHistory>${LOG_FILE_MAX_HISTORY:-15}</maxHistory>
+        </rollingPolicy>
+        <!-- 追加方式记录日志 -->
+        <append>true</append>
+        <!--日志输出编码格式化-->
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{39} Line:%-3L - %msg%n</pattern>
+        </encoder>
+
+    </appender>
+
+
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="io.netty" level="INFO"/>
+    <logger name="io.lettuce" level="INFO"/>
+    <logger name="ma.glasnost.orika" level="INFO"/>
+    <logger name="com.ctrip.framework.apollo" level="INFO"/>
+    <logger name="com.alibaba" level="INFO"/>
+    <logger name="druid.sql" level="INFO"/>
+    <logger name="org.mongodb" level="INFO"/>
+    <logger name="org.apache" level="INFO"/>
+    <logger name="org.xnio" level="INFO"/>
+    <logger name="org.hibernate.validator" level="INFO"/>
+    <logger name="io.undertow" level="INFO"/>
+
+    <springProfile name="UAT,PROD">
+        <root level="INFO">
+            <appender-ref ref="FILEERROR"/>
+            <appender-ref ref="FILEWARN"/>
+            <appender-ref ref="FILEINFO"/>
+            <appender-ref ref="ALLLOG"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+
+    <springProfile name="DEV,FAT">
+        <root level="DEBUG">
+            <appender-ref ref="FILEERROR"/>
+            <appender-ref ref="FILEWARN"/>
+            <appender-ref ref="FILEINFO"/>
+            <appender-ref ref="ALLLOG"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="TRACE">
+        <root level="TRACE">
+            <appender-ref ref="FILEERROR"/>
+            <appender-ref ref="FILEWARN"/>
+            <appender-ref ref="FILEINFO"/>
+            <appender-ref ref="ALLLOG"/>
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILETRACE"/>
+        </root>
+    </springProfile>
+
+</configuration>

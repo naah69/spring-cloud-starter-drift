@@ -1,0 +1,2 @@
+com.naah69.rpc.drift.client.annotation.EnableDriftClient=\
+com.naah69.rpc.drift.client.DriftClientAutoConfiguration

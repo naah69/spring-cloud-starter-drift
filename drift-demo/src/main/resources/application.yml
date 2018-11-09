@@ -1,0 +1,77 @@
+server:
+  port: 8088
+
+management:
+  endpoint:
+    shutdown:
+      enabled: true
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  health:
+    mongo:
+      enabled: false
+
+spring:
+  profiles:
+    active: DEV
+  application:
+    name: drift-calculator-client
+  cloud:
+    consul:
+      host: 10.20.0.162
+      port: 8500
+      retry:
+        max-attempts: 500
+      discovery:
+        health-check-critical-timeout: 5m
+        health-check-path: /actuator/health
+        health-check-interval: 5s
+        tags: dev
+        instance-id: ${spring.application.name}
+        enabled: true
+        prefer-ip-address: true
+        health-check-tls-skip-verify: true
+        query-passing: true
+        register: true
+  drift:
+    #    开关
+    enable: true
+    client:
+      #      接口扫描路径
+      package-to-scan: com.example.demo
+      #      传输模型
+      transport-model: framed
+      #      序列化模型
+      protocol-model: binary
+      #      服务列表刷新时间
+      refresh-interval: 1000000000000000000
+      pool:
+        #        连接重试次数
+        retry-times: 1
+        #        连接超时时间
+        connect-timeout: 2000
+        #        请求超时时间
+        request-timeout: 2000
+        #        最大连接数
+        pool-max-total-per-key: 1000
+        #        最大空闲数
+        pool-max-idle-per-key: 600
+        #        最小空闲数
+        pool-min-idle-per-key: 10
+        #        最大等待时间
+        pool-max-wait: 3000
+        #        创建时测试可用
+        test-on-create: true
+        #        借出时测试可用
+        test-on-borrow: true
+        #        返回时测试可用
+        test-on-return: true
+        #        空闲连接自动被回收
+        test-while-idle: true
+#logging:
+#  level:
+#    com.naah69.rpc.drift.client: debug
