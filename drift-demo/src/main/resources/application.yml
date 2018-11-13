@@ -44,11 +44,13 @@ spring:
       #      接口扫描路径
       package-to-scan: com.example.demo
       #      传输模型
+#      transport-model: framed
       transport-model: framed
       #      序列化模型
-      protocol-model: binary
+#      protocol-model: binary
+      protocol-model: compact
       #      服务列表刷新时间
-      refresh-interval: 1000000000000000000
+      refresh-interval: 30000
       pool:
         #        连接重试次数
         retry-times: 1
@@ -57,9 +59,9 @@ spring:
         #        请求超时时间
         request-timeout: 2000
         #        最大连接数
-        pool-max-total-per-key: 1000
+        pool-max-total-per-key: 400
         #        最大空闲数
-        pool-max-idle-per-key: 600
+        pool-max-idle-per-key: 200
         #        最小空闲数
         pool-min-idle-per-key: 10
         #        最大等待时间
@@ -72,6 +74,7 @@ spring:
         test-on-return: true
         #        空闲连接自动被回收
         test-while-idle: true
-#logging:
+logging:
+  file: log/drift-calculator-client.log
 #  level:
 #    com.naah69.rpc.drift.client: debug

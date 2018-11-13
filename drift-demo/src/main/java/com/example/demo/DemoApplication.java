@@ -26,4 +26,8 @@ public class DemoApplication {
     public static String getStatus() {
         return nlu.status();
     }
+
+    public static String parse() {
+        return nlu.parse("1001_2002", "1.0.0", "哈哈哈");
+    }
 }

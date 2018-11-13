@@ -230,6 +230,7 @@
             <appender-ref ref="FILEERROR"/>
             <appender-ref ref="FILEWARN"/>
             <appender-ref ref="FILEINFO"/>
+            <appender-ref ref="FILETRACE"/>
             <appender-ref ref="ALLLOG"/>
             <appender-ref ref="CONSOLE"/>
         </root>

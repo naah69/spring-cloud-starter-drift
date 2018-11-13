@@ -4,8 +4,9 @@ import com.naah69.rpc.drift.client.annotation.ThriftClient;
 import io.airlift.drift.annotations.ThriftMethod;
 import io.airlift.drift.annotations.ThriftService;
 
-@ThriftService
+
 @ThriftClient(serviceId = "nlu_service")
+//@ThriftService
 public interface NLU {
 
     @ThriftMethod("parse")
