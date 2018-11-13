@@ -10,7 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * DriftLoadBalancerFactory
+ * 负载均衡类工厂类
+ * factory to create of load balance
  *
  * @author naah
  * @date 2018-11-03 8:05 PM
@@ -22,6 +23,7 @@ public class DriftLoadBalancerFactory {
 
     /**
      * 获取服务节点负载均衡器
+     * get load balancer of server node
      *
      * @param serverNodeListController
      * @param routerRule

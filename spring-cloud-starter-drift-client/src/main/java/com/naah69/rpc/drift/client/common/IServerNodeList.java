@@ -4,7 +4,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
- * 服务节点列表端口
+ * 服务器节点列表接口
+ * the interface of server node list
  *
  * @param <T>
  * @author naah

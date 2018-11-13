@@ -1,7 +1,8 @@
 package com.naah69.rpc.drift.client.common;
 
 /**
- * 服务端签名类
+ * 服务签名类
+ * service signature
  *
  * @author naah
  */

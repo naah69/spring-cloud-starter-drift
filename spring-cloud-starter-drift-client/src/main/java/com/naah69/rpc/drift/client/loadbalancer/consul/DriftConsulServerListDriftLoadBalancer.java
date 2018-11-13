@@ -19,6 +19,7 @@ import java.util.Map;
 
 /**
  * consul 服务列表负载均衡器
+ * load balancer of consul server list
  *
  * @author naah
  */
@@ -44,16 +45,18 @@ public class DriftConsulServerListDriftLoadBalancer extends AbstractDriftLoadBal
 
     /**
      * 获取服务节点列表控制器
+     * get controller of server node list
      *
      * @return
      */
     @Override
-    public AbstractDriftServerNodeListController getThriftServerNodeList() {
+    public AbstractDriftServerNodeListController getThriftServerNodeListController() {
         return this.serverNodeList;
     }
 
     /**
-     * 选择服务节点
+     * 经过负载均衡后选择一个服务节点
+     * get a server node from load balancer
      *
      * @param key serviceName
      * @return
@@ -81,6 +84,7 @@ public class DriftConsulServerListDriftLoadBalancer extends AbstractDriftLoadBal
 
     /**
      * 开启刷新节点任务
+     * start to refresh server node
      */
     private synchronized void startUpdateAction() {
         LOGGER.info("Using serverListUpdater {}", serverListUpdater.getClass().getSimpleName());
@@ -93,6 +97,7 @@ public class DriftConsulServerListDriftLoadBalancer extends AbstractDriftLoadBal
 
     /**
      * 停止刷新节点任务
+     * stop to refresh server node
      */
     public void stopServerListRefreshing() {
         if (serverListUpdater != null) {
@@ -102,6 +107,7 @@ public class DriftConsulServerListDriftLoadBalancer extends AbstractDriftLoadBal
 
     /**
      * 更新服务列表
+     * update service list
      */
     private void updateListOfServers() {
         Map<String, LinkedHashSet<DriftConsulServerNode>> thriftConsulServers = this.serverNodeList.refreshThriftServers();

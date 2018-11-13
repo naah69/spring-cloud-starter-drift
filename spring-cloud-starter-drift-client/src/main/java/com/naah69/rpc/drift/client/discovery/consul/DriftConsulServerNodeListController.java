@@ -21,22 +21,29 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Consul服务节点列表（单例）
+ * Consul服务节点列表控制器（单例）
+ * controller of consul server node list. Singleton pattern
  *
  * @author naah
  */
 
 public class DriftConsulServerNodeListController extends AbstractDriftServerNodeListController<DriftConsulServerNode> {
 
-    public static final String SERVICE_NAME_SPLIT = "$";
     private static Logger LOGGER = LoggerFactory.getLogger(DriftConsulServerNodeListController.class);
+
     private ConsulClient consul;
     private HealthClient healthClient;
     private CatalogClient catalogClient;
 
     private static DriftConsulServerNodeListController serverNodeListController = null;
 
-
+    /**
+     * 单例模式创建对象
+     * Singleton pattern to create Object
+     *
+     * @param client
+     * @return
+     */
     public static AbstractDriftServerNodeListController singleton(ConsulClient client) {
         if (serverNodeListController == null) {
             synchronized (DriftConsulServerNodeListController.class) {
@@ -51,27 +58,26 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
     private DriftConsulServerNodeListController(ConsulClient client) {
 
         try {
-            /**
-             *反射获取ConsulClient
-             */
             consul = client;
 
             /**
-             *反射获取healthClient
+             * 反射获取healthClient
+             * use reflection to get healthClient
              */
-            healthClient = ConsulUtils.getHealthClient(consul);
+            healthClient = DriftConsulServerUtils.getHealthClient(consul);
 
             /**
-             *反射获取catalogClient
+             * 反射获取catalogClient
+             * use reflection to get catalogClient
              */
-            catalogClient = ConsulUtils.getCatalogClient(consul);
+            catalogClient = DriftConsulServerUtils.getCatalogClient(consul);
 
         } catch (NoSuchFieldException e) {
-            String msg = "try to get ConsulClient from DiscoveryClient failed! but can't find field";
+            String msg = "Try to get ConsulClient from DiscoveryClient failed! But can't find field";
             LOGGER.error(msg, e);
             throw new DriftClientServerNodeListException(msg);
         } catch (IllegalAccessException e) {
-            String msg = "try to get ConsulClient from DiscoveryClient failed! the field refused to access";
+            String msg = "Try to get ConsulClient from DiscoveryClient failed! The field refused to access";
             LOGGER.error(msg, e);
             throw new DriftClientServerNodeListException(msg);
         }
@@ -80,8 +86,9 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
 
     /**
      * 通过serviceName获取节点列表
+     * get node list by service name
      *
-     * @param serviceName 服务名 serviceId$version 或 serviceId
+     * @param serviceName format serviceId$version or serviceId
      * @return
      */
     @Override
@@ -89,9 +96,10 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
 
         /**
          * 分解serverId和version
+         * get serverId and version from serviceName
          */
         String version = null;
-        if (StringUtils.isNotBlank(serviceName) && serviceName.contains(SERVICE_NAME_SPLIT)) {
+        if (StringUtils.isNotBlank(serviceName) && serviceName.contains(ConsulField.SERVICE_NAME_SPLIT)) {
             String[] split = serviceName.split("\\$");
             serviceName = split[0];
             version = split[1];
@@ -108,11 +116,13 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
                     if (StringUtils.isNotBlank(version) && driftNode.getTags().contains(version)) {
                         /**
                          * 有版本号
+                         * if it has version
                          */
                         serverNodes.add(driftNode);
                     } else if (StringUtils.isBlank(version) && (driftNode.getTags() == null || driftNode.getTags().size() == 0)) {
                         /**
                          * 没有版本号
+                         * no version
                          */
                         serverNodes.add(driftNode);
                     }
@@ -124,24 +134,27 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
         }
 
         /**
-         *根据服务名刷新服务列表
+         * 根据服务名刷新服务列表
+         * refresh server list by service name
          */
         return refreshThriftServer(serviceName);
     }
 
     /**
      * 通过serviceName刷新节点列表
+     * refresh server list by service name
      *
-     * @param serviceName 服务名 serviceId$version 或 serviceId
+     * @param serviceName format serviceId$version or serviceId
      * @return
      */
     @Override
     public List<DriftConsulServerNode> refreshThriftServer(String serviceName) {
         /**
          * 分解serverId和version
+         * get serverId and version from serviceName
          */
         String version = null;
-        if (StringUtils.isNotBlank(serviceName) && serviceName.contains(SERVICE_NAME_SPLIT)) {
+        if (StringUtils.isNotBlank(serviceName) && serviceName.contains(ConsulField.SERVICE_NAME_SPLIT)) {
             String[] split = serviceName.split("\\$");
             serviceName = split[0];
             version = split[1];
@@ -150,18 +163,18 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
         List<DriftConsulServerNode> serverNodeList = Lists.newLinkedList();
 
         /**
-         * 获取健康节点
+         * get health node
          */
         List<HealthService> healthservicelist = healthClient.getHealthServices(serviceName, true, QueryParams.DEFAULT).getValue();
 
         /**
-         *过滤节点
+         * filter node
          */
         filterAndCompoServerNodes(version, serverNodeList, healthservicelist);
 
         if (CollectionUtils.isNotEmpty(serverNodeList)) {
             /**
-             * 加入缓存
+             * put them into server node map
              */
             this.serverNodeMap.put(serviceName, Sets.newLinkedHashSet(serverNodeList));
         }
@@ -170,7 +183,7 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
     }
 
     /**
-     * 获取所有服务节点列表
+     * get all thrift server node map
      *
      * @return
      */
@@ -184,14 +197,14 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
     }
 
     /**
-     * 刷新所有节点服务列表
+     * refresh all thrift server node map
      *
      * @return
      */
     @Override
     public Map<String, LinkedHashSet<DriftConsulServerNode>> refreshThriftServers() {
         /**
-         * 获取consul节点目录
+         * get catalog
          */
         Map<String, List<String>> catalogServiceMap = catalogClient.getCatalogServices(QueryParams.DEFAULT).getValue();
         if (MapUtils.isEmpty(catalogServiceMap)) {
@@ -223,6 +236,7 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
 
     /**
      * Consul的HealthService节点 转化为 DriftConsulServerNode
+     * convert health service node to drift consul server node
      *
      * @param healthservice
      * @return
@@ -248,6 +262,7 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
 
     /**
      * 过滤服务节点
+     * filter service node
      *
      * @param version
      * @param serverNodeList

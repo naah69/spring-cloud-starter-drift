@@ -80,6 +80,7 @@ public final class DriftClientBeanScanner extends ClassPathBeanDefinitionScanner
                 continue;
             }
 
+
             /**
              *通过注解的值获取beanname
              */

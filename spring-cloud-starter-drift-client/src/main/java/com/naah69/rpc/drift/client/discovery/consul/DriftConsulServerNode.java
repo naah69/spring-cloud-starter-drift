@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * Consul服务节点
+ * Consul server node
  *
  * @author naah
  */

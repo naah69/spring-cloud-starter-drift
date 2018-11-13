@@ -2,6 +2,7 @@ package com.naah69.rpc.drift.client.exception;
 
 /**
  * 客户端配置异常
+ * client config exception
  *
  * @author naah
  */

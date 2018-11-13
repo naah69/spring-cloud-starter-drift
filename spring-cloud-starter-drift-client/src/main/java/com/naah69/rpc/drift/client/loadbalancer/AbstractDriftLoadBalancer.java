@@ -9,6 +9,7 @@ import java.util.Map;
 
 /**
  * 负载均衡器抽象类
+ * abstract class of load balancer
  *
  * @author naah
  */
@@ -16,6 +17,7 @@ public abstract class AbstractDriftLoadBalancer implements ILoadBalancer<DriftSe
 
     /**
      * 选择服务节点
+     * choose server node
      *
      * @param key
      * @return
@@ -25,51 +27,56 @@ public abstract class AbstractDriftLoadBalancer implements ILoadBalancer<DriftSe
 
     /**
      * 获取所有服务节点Map
+     * get all server node Map
      *
      * @return
      */
     @Override
     public Map<String, LinkedHashSet<DriftServerNode>> getAllServerNodes() {
-        return getThriftServerNodeList().getServerNodeMap();
+        return getThriftServerNodeListController().getServerNodeMap();
     }
 
     /**
      * 刷新所有服务节点Map
+     * refresh all server node Map
      *
      * @return
      */
     @Override
     public Map<String, LinkedHashSet<DriftServerNode>> getRefreshedServerNodes() {
-        return getThriftServerNodeList().refreshThriftServers();
+        return getThriftServerNodeListController().refreshThriftServers();
     }
 
     /**
      * 通过serviceName获取服务节点列表
+     * get server node by service name
      *
      * @param key
      * @return
      */
     @Override
     public List<DriftServerNode> getServerNodes(String key) {
-        return getThriftServerNodeList().getThriftServer(key);
+        return getThriftServerNodeListController().getThriftServer(key);
     }
 
     /**
      * 通过serviceName刷新服务节点列表
+     * refresh service name by service name
      *
      * @param key
      * @return
      */
     @Override
     public List<DriftServerNode> getRefreshedServerNodes(String key) {
-        return getThriftServerNodeList().refreshThriftServer(key);
+        return getThriftServerNodeListController().refreshThriftServer(key);
     }
 
     /**
      * 获取服务节点列表控制器
+     * get controller of server node list
      *
      * @return
      */
-    public abstract AbstractDriftServerNodeListController getThriftServerNodeList();
+    public abstract AbstractDriftServerNodeListController getThriftServerNodeListController();
 
 }

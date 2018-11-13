@@ -2,6 +2,7 @@ package com.naah69.rpc.drift.client.discovery;
 
 /**
  * 注册中心枚举类
+ * enum of registry center
  *
  * @author naah
  * @date 2018-11-03 1:43 PM
@@ -15,7 +16,8 @@ public enum RegistryEnum {
     SpringCloudConsulDiscoveryClient("SpringCloudConsulDiscoveryClient");
 
     /**
-     * Spring Cloud Discovery Client 描述
+     * description：
+     * example:Spring Cloud Discovery Client
      */
     private final String description;
 

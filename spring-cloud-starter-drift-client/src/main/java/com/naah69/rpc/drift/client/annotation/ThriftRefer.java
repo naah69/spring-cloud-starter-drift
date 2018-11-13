@@ -5,7 +5,10 @@ import org.springframework.core.annotation.AliasFor;
 import java.lang.annotation.*;
 
 /**
- * 注入接口
+ * 向字段注入实现
+ * inject a implement to field
+ *
+ * @author naah
  */
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -21,8 +24,7 @@ public @interface ThriftRefer {
 
     /**
      * 版本号
-     *
-     * @return
+     * version
      */
     String version() default "";
 }

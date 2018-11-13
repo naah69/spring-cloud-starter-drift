@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Consul列表更新器
+ * the server list updater of consul
  *
  * @author naah
  */
@@ -25,16 +26,19 @@ public class DriftConsulServerListUpdater implements IServerListUpdater {
 
     /**
      * 初始延迟
+     * delay after begin
      */
     private final long initialDelayMs;
 
     /**
      * 刷新间隔
+     * refresh interval
      */
     private final long refreshIntervalMs;
 
     /**
      * 调度任务
+     * multi thread that schedule future
      */
     private volatile ScheduledFuture<?> scheduledFuture;
 
@@ -56,7 +60,7 @@ public class DriftConsulServerListUpdater implements IServerListUpdater {
 
     /**
      * 懒加载
-     * 单例
+     * lazy holder
      */
     private static class LazyHolder {
         private static final int CORE_THREAD = 2;
@@ -64,11 +68,13 @@ public class DriftConsulServerListUpdater implements IServerListUpdater {
 
         /**
          * 服务列表定时刷新器
+         * refresh executor of server list
          */
         static ScheduledThreadPoolExecutor serverListRefreshExecutor = null;
 
         /**
-         *创建调度线程池
+         * 创建调度线程池
+         * create schedule thread pool
          */
         static {
             ThreadFactory factory = new ThreadFactoryBuilder()
@@ -91,34 +97,26 @@ public class DriftConsulServerListUpdater implements IServerListUpdater {
             });
 
             /**
-             *添加关闭钩子
+             * 添加关闭钩子
+             * add hook before shutdown
              */
             Runtime.getRuntime().addShutdownHook(shutdownThread);
         }
 
         /**
          * 关闭线程池
+         * close thread pool
          */
         private static void shutdownExecutorPool() throws InterruptedException {
             if (serverListRefreshExecutor != null) {
-                serverListRefreshExecutor.shutdownNow();
-                if (shutdownThread != null) {
-                    try {
-                        /**
-                         *移除关闭钩子
-                         */
-                        Runtime.getRuntime().removeShutdownHook(shutdownThread);
-                    } catch (IllegalStateException e) {
-                        LOGGER.error("Failed to shutdown the Executor Pool for DriftConsulServerListUpdater", e);
-                    }
-                }
-
+                serverListRefreshExecutor.shutdown();
             }
         }
     }
 
     /**
-     * 获取服务列表刷新器（单例）
+     * 获取服务列表刷新线程池
+     * get server list refresh executor
      */
     private static ScheduledThreadPoolExecutor getRefreshExecutor() {
         return LazyHolder.serverListRefreshExecutor;
@@ -126,6 +124,7 @@ public class DriftConsulServerListUpdater implements IServerListUpdater {
 
     /**
      * 开启定时刷新任务列表
+     * start to fixed cycle refresh server list
      *
      * @param updateAction
      */
@@ -135,12 +134,14 @@ public class DriftConsulServerListUpdater implements IServerListUpdater {
             Runnable scheduledRunnable = () -> {
 
                 /**
-                 *如果关闭状态
+                 * 如果关闭状态
+                 * if it is closed
                  */
                 if (!isActive.get()) {
                     if (scheduledFuture != null) {
                         /**
-                         *尝试取消任务
+                         * 尝试取消任务
+                         * try canceling task
                          */
                         scheduledFuture.cancel(true);
                     }
@@ -149,7 +150,8 @@ public class DriftConsulServerListUpdater implements IServerListUpdater {
 
                 try {
                     /**
-                     *更新服务列表
+                     * 更新服务列表
+                     * update server list
                      */
                     updateAction.doUpdate();
                 } catch (Exception e) {
@@ -171,6 +173,7 @@ public class DriftConsulServerListUpdater implements IServerListUpdater {
 
     /**
      * 关闭定时刷新
+     * stop to fixed cycle refresh server list
      */
     @Override
     public void stop() {

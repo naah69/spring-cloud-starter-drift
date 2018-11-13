@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Cache管理器 单例
+ * DriftServiceMethodCache管理器
+ * the manager of {@link DriftServiceMethodCache}.
  *
  * @author naah
  */
@@ -17,6 +18,7 @@ public class DriftServiceMethodCacheManager {
 
     /**
      * 获取缓存方法
+     * get method from cache
      *
      * @param targetClass
      * @param methodName
@@ -35,7 +37,8 @@ public class DriftServiceMethodCacheManager {
     }
 
     /**
-     * 获取缓存
+     * 如果不存在就添加
+     * if it absent,put it into cache
      *
      * @param targetClass
      * @return

@@ -2,6 +2,7 @@ package com.naah69.rpc.drift.client.loadbalancer;
 
 /**
  * 负载均衡规则抽象类
+ * abstract of load balance rule
  *
  * @author naah
  */

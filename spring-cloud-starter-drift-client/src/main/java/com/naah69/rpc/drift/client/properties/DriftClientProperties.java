@@ -14,6 +14,7 @@ public class DriftClientProperties {
 
     /**
      * 扫描包路径
+     * package to scan
      */
     private String packageToScan = DEFAULT_PACKAGE_TO_SCAN;
 
@@ -21,16 +22,19 @@ public class DriftClientProperties {
 
     /**
      * 连接池配置信息
+     * client pool properties
      */
     private DriftClientPoolProperties pool;
 
     /**
      * 客户端扫描的包名称/多个子包用逗号分割
+     * default package to scan
      */
     private final static String DEFAULT_PACKAGE_TO_SCAN = "";
 
     /**
      * 服务列表默认刷新时间
+     * default server node list refresh interval
      */
     private final static Long DEFAULT_REFRESH_INTERVAL = 30000L;
 

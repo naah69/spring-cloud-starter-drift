@@ -10,6 +10,7 @@ import java.util.Map;
 
 /**
  * 服务方法缓存
+ * cache of drift service method
  *
  * @author naah
  */
@@ -27,7 +28,8 @@ public class DriftServiceMethodCache {
         for (Method method : declaredMethods) {
 
             /**
-             *安全检查 && public && 不是静态的
+             * 安全检查 && public && 不是静态的
+             * Security check && public && not static
              */
             if (!method.isAccessible() && ((1 & method.getModifiers()) > 0) && ((8 & method.getModifiers()) == 0)) {
                 put(method);
@@ -42,13 +44,15 @@ public class DriftServiceMethodCache {
 
     /**
      * 方法加入缓存
+     * put the method into cache
      *
      * @param method
      */
     private void put(Method method) {
         Type[] types = method.getParameterTypes();
         /**
-         *key为 方法名+参数数量+所有参数名
+         * key为 方法名+参数数量+所有参数名
+         * the format of key is that method name + parameter count + all parameter name
          */
         StringBuilder cachedKey = new StringBuilder(method.getName() + types.length);
         for (Type type : types) {
@@ -63,6 +67,7 @@ public class DriftServiceMethodCache {
 
     /**
      * 获取方法
+     * get method form cache
      *
      * @param name      方法名
      * @param arguments 参数列表

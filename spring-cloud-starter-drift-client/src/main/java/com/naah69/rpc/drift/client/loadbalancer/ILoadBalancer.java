@@ -8,6 +8,7 @@ import java.util.Map;
 
 /**
  * 负载均衡接口
+ * interface of load balance
  *
  * @param <T>
  * @author naah
@@ -16,6 +17,7 @@ public interface ILoadBalancer<T extends DriftServerNode> {
 
     /**
      * 选择服务节点
+     * chooser server node
      *
      * @param key
      * @return
@@ -24,6 +26,7 @@ public interface ILoadBalancer<T extends DriftServerNode> {
 
     /**
      * 获取所有的服务节点Map
+     * get all server node Map
      *
      * @return
      */
@@ -31,6 +34,7 @@ public interface ILoadBalancer<T extends DriftServerNode> {
 
     /**
      * 刷新所有的服务节点Map
+     * refresh all server node Map
      *
      * @return
      */
@@ -38,6 +42,7 @@ public interface ILoadBalancer<T extends DriftServerNode> {
 
     /**
      * 通过serviceName获取服务节点列表
+     * get server node ist by service name
      *
      * @param key
      * @return
@@ -46,6 +51,7 @@ public interface ILoadBalancer<T extends DriftServerNode> {
 
     /**
      * 通过serviceName刷新服务节点列表
+     * refresh server node list by service name
      *
      * @param key
      * @return

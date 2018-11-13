@@ -15,8 +15,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Thrift客户端上下文
- * 单例
+ * Thrift客户端上下文 单例
+ * context of Drift client. Singleton pattern
  *
  * @author naah
  */
@@ -33,41 +33,49 @@ public class DriftClientContext {
 
     /**
      * 客户端配置文件
+     * the properties of Drift Client
      */
     private DriftClientProperties properties;
 
     /**
-     * 对象池
+     * Drift 服务对象池
+     * the object pool of Drift service
      */
     private DriftServiceKeyedObjectPool objectPool;
 
     /**
      * 注册中心名称
+     * register center name
      */
     private String registryName;
 
     /**
-     * 注册地址
+     * 注册中心地址
+     * register center adress
      */
     private String registryAddress;
 
     /**
      * SpringCloud Discory客户端
+     * the DiscoveryClient Component of SpringCloud
      */
     private DiscoveryClient client;
 
     /**
      * 真实的注册中心客户端
+     * the real registry client
      */
     private Object registryClient;
 
     /**
-     * 环境
+     * Spring 环境
+     * the Environment of Spring
      */
     private Environment env;
 
     /**
      * Spring Contetx
+     * the context of Spring
      */
     private ApplicationContext applicationContext;
 
@@ -105,9 +113,10 @@ public class DriftClientContext {
 
     /**
      * 注册
+     * initial registry information of context
      *
-     * @param client      SpringCloud Discovery客户端
-     * @param environment Spring 环境
+     * @param client      Discovery client
+     * @param environment Spring environment
      * @throws NoSuchFieldException
      * @throws IllegalAccessException
      */
@@ -125,12 +134,16 @@ public class DriftClientContext {
 
     /**
      * 获取包含真实Client的Discovery客户端
-     * <p>
+     * get real Discovery client
+     *
      * 因为Spring Cloud 2.0.1以后加入一层封装
      * 默认使用{@link CompositeDiscoveryClient}
      *
-     * @param client SpringCloud Discovery客户端
-     * @return Discovery客户端
+     * because there is encapsulated layer of Discovery Client after Spring Cloud 2.0.1
+     * default use {@link CompositeDiscoveryClient}
+     *
+     * @param client Discovery client
+     * @return real Discovery client
      */
     private DiscoveryClient getRealDiscoveryClient(DiscoveryClient client) {
         if (client instanceof CompositeDiscoveryClient) {

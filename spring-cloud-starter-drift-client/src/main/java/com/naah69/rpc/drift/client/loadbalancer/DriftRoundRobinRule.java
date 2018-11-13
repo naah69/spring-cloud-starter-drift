@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 负载均衡轮训规则
+ * load balance rule of robin
  *
  * @author naah
  */
@@ -30,6 +31,7 @@ public class DriftRoundRobinRule extends AbstractDriftLoadBalancerRule {
 
     /**
      * 通过serviceName选择服务节点
+     * choose server name by service name
      *
      * @param key
      * @return
@@ -41,6 +43,7 @@ public class DriftRoundRobinRule extends AbstractDriftLoadBalancerRule {
 
     /**
      * 通过负载均衡器和serviceName选择服务节点
+     * chooser server name by load balance and service name
      *
      * @param lb  负载均衡器
      * @param key serviceName
@@ -58,11 +61,13 @@ public class DriftRoundRobinRule extends AbstractDriftLoadBalancerRule {
         int count = 0;
 
         /**
-         *获取10次
+         * 获取10次
+         * try getting 10 times
          */
         while (serverNode == null && count++ < SERVERNODE_CHOOSE_TIMES) {
             /**
-             *获取列表
+             * 获取列表
+             * get server node list
              */
             serverNodes = lb.getServerNodes(key);
 
@@ -79,11 +84,14 @@ public class DriftRoundRobinRule extends AbstractDriftLoadBalancerRule {
             }
 
             /**
-             *索引增加一个
+             * 索引增加一个
+             * index increment
              */
             int nextServerIndex = incrementAndGetModulo(serverNodes.size());
+
             /**
-             *获取节点
+             * 获取节点
+             * get node
              */
             serverNode = serverNodes.get(nextServerIndex);
 
@@ -102,6 +110,7 @@ public class DriftRoundRobinRule extends AbstractDriftLoadBalancerRule {
 
     /**
      * 增加并且获取一个
+     * increment and get index
      *
      * @param modulo
      * @return

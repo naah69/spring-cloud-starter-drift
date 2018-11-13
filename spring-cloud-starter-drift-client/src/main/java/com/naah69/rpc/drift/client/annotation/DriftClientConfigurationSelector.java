@@ -7,6 +7,7 @@ import org.springframework.core.env.Environment;
 
 /**
  * 判断配置开启
+ * judge config whether be enable
  *
  * @author naah
  */

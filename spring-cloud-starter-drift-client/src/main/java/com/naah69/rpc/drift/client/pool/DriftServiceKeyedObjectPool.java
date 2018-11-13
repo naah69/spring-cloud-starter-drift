@@ -7,6 +7,7 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 
 /**
  * 服务连接池
+ * object pool of service
  *
  * @author naah
  */
@@ -23,6 +24,7 @@ public class DriftServiceKeyedObjectPool extends GenericKeyedObjectPool<DriftSer
 
     /**
      * 取出连接
+     * get connect
      *
      * @param key
      * @return
@@ -35,6 +37,7 @@ public class DriftServiceKeyedObjectPool extends GenericKeyedObjectPool<DriftSer
 
     /**
      * 归还连接
+     * return connect
      *
      * @param key
      * @param obj

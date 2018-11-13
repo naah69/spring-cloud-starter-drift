@@ -32,8 +32,8 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 /**
- * 截面
- * 远程调用 方法拦截 来负载均衡一个服务节点
+ * 截面 远程调用 方法拦截 来负载均衡一个服务节点
+ * advice
  *
  * @author naah
  */
@@ -72,7 +72,8 @@ public class DriftClientAdvice implements MethodInterceptor {
         this.loadBalancer = DriftLoadBalancerFactory.getLoadBalancer(serverNodeListController, routerRule);
 
         /**
-         *设置负载均衡
+         * 设置负载均衡
+         * set load balancer
          */
         routerRule.setLoadBalancer(loadBalancer);
     }
@@ -85,21 +86,24 @@ public class DriftClientAdvice implements MethodInterceptor {
 
 
         /**
-         *获取配置文件
+         * 获取配置文件
+         * get properties
          */
         if (Objects.isNull(properties)) {
             this.properties = context.getProperties();
         }
 
         /**
-         *获取对象池
+         * 获取对象池
+         * get object pool
          */
         if (Objects.isNull(objectPool)) {
             this.objectPool = context.getObjectPool();
         }
 
         /**
-         *获取要调用的方法
+         * 获取要调用的方法
+         * get the method to invok
          */
         Method invocationMethod = invocation.getMethod();
         Object[] args = invocation.getArguments();
@@ -107,43 +111,56 @@ public class DriftClientAdvice implements MethodInterceptor {
 
         /**
          * 获取调用方的注解
+         * get the annotation of caller
          */
         ThriftRefer thriftReferAnnotation = DriftAnnotationUtils.getThriftReferAnnotation(invocationMethod);
+        if (thriftReferAnnotation==null){
+            LOGGER.warn("can't find Annotation ThriftRefer from caller");
+        }
         String version = thriftReferAnnotation.version();
 
         /**
-         *获取对象池配置
+         * 获取对象池配置
+         * get properties of pool
          */
         DriftClientPoolProperties poolProperties = properties.getPool();
 
         /**
-         *从签名获取serviceId
+         * 从签名获取serviceId
+         * get service id
          */
         String serviceId = serviceSignature.getThriftServiceId();
 
         String serviceName = StringUtils.isNotBlank(version) ? serviceId + "$" + version : serviceId;
+
         /**
-         *负载均衡选择一个节点
+         * 负载均衡选择一个节点
+         * load balancer to choose server node
          */
         DriftServerNode serverNode = loadBalancer.chooseServerNode(serviceName);
         if (serverNode == null) {
             LOGGER.warn("cant't find serverNode. serviceId:{},version:{}", serviceId, version);
         }
         /**
-         *生成服务签名信息
+         * 生成服务签名信息
+         * create service signature
          */
         String signature = serviceSignature.marker();
 
 
         /**
-         *重试次数
+         * 重试次数
+         * retry times
          */
         int retryTimes = 0;
         Object service = null;
+        String oldHost=serverNode.getHost();
+        int oldPort=serverNode.getPort();
         while (true) {
 
             /**
-             *如果超过重试次数
+             * 如果超过重试次数
+             * if it bigger than retry times
              */
             if (retryTimes++ > poolProperties.getRetryTimes()) {
                 LOGGER.error(
@@ -151,35 +168,48 @@ public class DriftClientAdvice implements MethodInterceptor {
                         invocation.getMethod().getName(), args, retryTimes);
                 throw new DriftClientException("Thrift client call failed, drift client signature is: " + signature);
             }
+
+            if (retryTimes>1){
+                serverNode = loadBalancer.chooseServerNode(serviceName);
+                if (serverNode == null) {
+                    LOGGER.warn("cant't find serverNode. serviceId:{},version:{}", serviceId, version);
+                }
+
+                LOGGER.warn("{}th try request. old host:{} , new host:{} ; old port:{} , new port:{} ,version:{}", retryTimes,oldHost,serverNode.getHost(),oldPort,serverNode.getPort(), version);
+                oldHost=serverNode.getHost();
+                oldPort=serverNode.getPort();
+            }
             try {
 
                 /**
-                 *从对象池取出节点
+                 * 从对象池取出节点
+                 * get server node from object pool
                  */
                 DriftThreadCacheUtils.getClassThreadCache().set(declaringClass);
                 service = objectPool.borrowObject(serverNode);
 
                 /**
-                 *获取缓存的方法
+                 * 获取缓存的方法
+                 * get method from cache
                  */
                 Method cachedMethod = DriftServiceMethodCacheManager.getMethod(service.getClass(),
                         invocationMethod.getName(),
                         invocationMethod.getParameterTypes());
 
                 /**
-                 *返回调用结果
+                 * 返回调用结果
+                 * return invoke result
                  */
                 return ReflectionUtils.invokeMethod(cachedMethod, service, args);
 
             } catch (IllegalArgumentException | IllegalAccessException | InstantiationException | SecurityException | NoSuchMethodException e) {
-                LOGGER.error(" Unable to open drift client", e);
+                LOGGER.error("Unable to open drift client", e);
             } catch (UncheckedTTransportException e) {
-                LOGGER.error(" rpc access failed for time out exception", e);
+                LOGGER.error("Rpc access failed for time out exception", e);
             } catch (Exception e) {
-                LOGGER.error(" rpc access failed for exception", e);
+                LOGGER.error("Rpc access failed for exception", e);
 
             } finally {
-                //清空
                 DriftThreadCacheUtils.getClassThreadCache().set(null);
                 try {
                     if (objectPool != null && service != null) {

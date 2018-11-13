@@ -1,7 +1,8 @@
 package com.naah69.rpc.drift.client.common;
 
 /**
- * 服务端节点类
+ * 服务器节点类
+ * server node
  *
  * @author naah
  */

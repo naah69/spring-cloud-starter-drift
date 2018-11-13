@@ -8,6 +8,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * 配置信息判断类
+ * config condition
  *
  * @author naah
  */

@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 连接池 对象工厂类
+ * factory to create object in object pool
  *
  * @author naah
  */
@@ -38,6 +39,7 @@ public class DriftClientFactoryKeyedPooledObjectFactory extends BaseKeyedPooledO
 
     /**
      * 创建连接
+     * create connect
      *
      * @param key
      * @return
@@ -67,19 +69,16 @@ public class DriftClientFactoryKeyedPooledObjectFactory extends BaseKeyedPooledO
 
             DriftClientPoolProperties poolProperties = properties.getPool();
             if (Objects.isNull(poolProperties)) {
-                driftClientFactory = DriftClientFactory.determineTTranport(properties.getProtocolModel(), properties.getTransportModel(), key);
+                driftClientFactory = DriftClientFactory.determineTTranportAndProtocol(properties.getProtocolModel(), properties.getTransportModel(), key);
 
             } else {
-                /**
-                 *properties 放进去
-                 */
-                driftClientFactory = DriftClientFactory.determineTTranport(properties.getProtocolModel(), properties.getTransportModel(), key, poolProperties);
+                driftClientFactory = DriftClientFactory.determineTTranportAndProtocol(properties.getProtocolModel(), properties.getTransportModel(), key, poolProperties);
 
             }
             LOGGER.info("Established {}th socket transport, protocol is {}, transport is {}", TRANSPORT_CONNECT_COUNT.incrementAndGet(), properties.getProtocolModel(), properties.getTransportModel());
             driftServerNodeDriftClientFactoryMap.put(key, driftClientFactory);
         }
-        LOGGER.debug("create {}th socket client", CLIENT_CONNECT_COUNT.incrementAndGet());
+        LOGGER.debug("Create {}th socket client", CLIENT_CONNECT_COUNT.incrementAndGet());
 
         return driftClientFactory.createDriftClient(clazz).get();
     }
@@ -87,6 +86,7 @@ public class DriftClientFactoryKeyedPooledObjectFactory extends BaseKeyedPooledO
 
     /**
      * 包装连接
+     * wrap connect
      *
      * @param value
      * @return
@@ -99,6 +99,7 @@ public class DriftClientFactoryKeyedPooledObjectFactory extends BaseKeyedPooledO
 
     /**
      * 验证连接
+     * validate connect
      *
      * @param key
      * @param value
@@ -128,6 +129,7 @@ public class DriftClientFactoryKeyedPooledObjectFactory extends BaseKeyedPooledO
 
     /**
      * 销毁连接
+     * destroy connect
      *
      * @param key
      * @param value
@@ -136,11 +138,8 @@ public class DriftClientFactoryKeyedPooledObjectFactory extends BaseKeyedPooledO
     @Override
     public void destroyObject(DriftServerNode key, PooledObject<Object> value) throws Exception {
         if (Objects.nonNull(value)) {
-            /**
-             *设置为丢弃
-             */
             value.markAbandoned();
-            LOGGER.debug("destroy {}th socket client", CLIENT_CONNECT_COUNT.decrementAndGet());
+            LOGGER.debug("Destroy {}th socket client", CLIENT_CONNECT_COUNT.decrementAndGet());
         }
     }
 

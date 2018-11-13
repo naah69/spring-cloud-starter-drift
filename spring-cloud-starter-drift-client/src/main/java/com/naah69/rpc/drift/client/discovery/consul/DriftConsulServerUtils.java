@@ -1,9 +1,14 @@
 package com.naah69.rpc.drift.client.discovery.consul;
 
+import com.ecwid.consul.v1.ConsulClient;
+import com.ecwid.consul.v1.catalog.CatalogClient;
+import com.ecwid.consul.v1.health.HealthClient;
 import com.ecwid.consul.v1.health.model.Check;
 import com.ecwid.consul.v1.health.model.HealthService;
 import com.ecwid.consul.v1.health.model.HealthService.Node;
 import com.ecwid.consul.v1.health.model.HealthService.Service;
+import com.naah69.rpc.drift.client.exception.DriftClientServerNodeListException;
+import com.naah69.rpc.drift.client.utils.DriftReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -17,7 +22,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Consul工具类
+ * the utils of consul
+ *
  * @author naah
+ * @date 2018-11-07 7:04 PM
+ * @desc
  */
 public class DriftConsulServerUtils {
 
@@ -29,7 +39,8 @@ public class DriftConsulServerUtils {
     }
 
     /**
-     * 转换地址
+     * 从健康节点获取主机地址
+     * get host from health service
      *
      * @param healthservice
      * @return
@@ -46,6 +57,7 @@ public class DriftConsulServerUtils {
 
     /**
      * 转换IPv6地址
+     * convert IPv6 adress
      *
      * @param address
      * @return
@@ -60,6 +72,13 @@ public class DriftConsulServerUtils {
         }
     }
 
+    /**
+     * 获取标签
+     * get tags form health service
+     *
+     * @param healthservice
+     * @return
+     */
     public static List<String> getTags(HealthService healthservice) {
         return healthservice.getService().getTags();
     }
@@ -67,6 +86,7 @@ public class DriftConsulServerUtils {
 
     /**
      * 测试是否健康
+     * check service whatever is passing
      *
      * @param healthservice
      * @return
@@ -83,6 +103,7 @@ public class DriftConsulServerUtils {
 
     /**
      * 获取元数据
+     * get metadata from healthservice
      *
      * @param healthservice
      * @return
@@ -120,6 +141,50 @@ public class DriftConsulServerUtils {
         }
 
         return metadata;
+    }
+
+    /**
+     * 从Consul客户端获取CatalogClient
+     * get catalog client from consul client
+     *
+     * @param consul
+     * @return
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     */
+    public static CatalogClient getCatalogClient(ConsulClient consul) throws NoSuchFieldException, IllegalAccessException {
+        RuntimeException e;
+        Object catalogClientObj = DriftReflectionUtils.getObjByFieldFromTarget(ConsulField.CATALOG_CLIENT_FIELD_NAME, ConsulClient.class, consul);
+        if (catalogClientObj instanceof CatalogClient && catalogClientObj != null) {
+            return (CatalogClient) catalogClientObj;
+        } else {
+            String msg = "Try to get CatalogClient from ConsulClient failed";
+            LOGGER.error(msg);
+            e = new DriftClientServerNodeListException(msg);
+            throw e;
+        }
+    }
+
+    /**
+     * 从Consul客户端获取Health client
+     * get health client from consul client
+     *
+     * @param consul
+     * @return
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     */
+    public static HealthClient getHealthClient(ConsulClient consul) throws NoSuchFieldException, IllegalAccessException {
+        RuntimeException e;
+        Object healthClientObj = DriftReflectionUtils.getObjByFieldFromTarget(ConsulField.HEALTH_CLIENT_FIELD_NAME, ConsulClient.class, consul);
+        if (healthClientObj instanceof HealthClient && healthClientObj != null) {
+            return (HealthClient) healthClientObj;
+        } else {
+            String msg = "Try to get HealthClient from ConsulClient failed";
+            LOGGER.error(msg);
+            e = new DriftClientServerNodeListException(msg);
+            throw e;
+        }
     }
 
 }

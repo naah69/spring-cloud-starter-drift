@@ -10,57 +10,68 @@ public class DriftClientPoolProperties {
 
     /**
      * 重试次数
+     * retry times
      */
     private int retryTimes = 3;
 
     /**
      * 连接超时
+     * connect timeout
      */
     private int connectTimeout = 10000;
 
     /**
      * 请求超时
+     * request timeout
      */
     private int requestTimeout = 10000;
 
     /**
-     * 连接池最大数
+     * 连接池最大连接数
+     * max service total in pool
      */
     private int poolMaxTotalPerKey = 60;
 
     /**
      * 连接池最大空闲数
+     * max idle service total in pool
      */
     private int poolMaxIdlePerKey = 40;
 
     /**
      * 连接池最小空闲数
+     * min idle service total in pool
      */
     private int poolMinIdlePerKey = 3;
 
     /**
      * 连接池最大等待时间
+     * max wait in pool
      */
     private long poolMaxWait = 180000;
 
     /**
      * 池对象创建时时验证是否正常可用
+     * create whether validate
      */
     private boolean testOnCreate = true;
 
     /**
      * 池对象借出时验证是否正常可用
+     * borrow whether validate
      */
     private boolean testOnBorrow = true;
 
 
     /**
      * 池对象归还时验证是否正常可用
+     * return whether validate
      */
     private boolean testOnReturn = true;
 
     /**
      * 空闲连接自动被空闲连接回收器
+     * idle whether validate
      */
     private boolean isTestWhileIdle = true;
 

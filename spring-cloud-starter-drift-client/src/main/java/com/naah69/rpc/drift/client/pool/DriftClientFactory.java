@@ -24,6 +24,7 @@ import static io.airlift.drift.transport.netty.client.DriftNettyMethodInvokerFac
 
 /**
  * Thrift连接工厂类
+ * factory to create thrift connect
  *
  * @author naah
  */
@@ -37,14 +38,16 @@ public class DriftClientFactory {
     private static DriftNettyMethodInvokerFactory<?> INVOKER_FACTORY = null;
 
     /**
-     * 选择传输协议
+     * 选择传输协议和序列化方式
+     * choose transport and protocol
      *
+     * @param protocolModel
      * @param transportModel
      * @param serverNode
      * @param properties
      * @return
      */
-    public static io.airlift.drift.client.DriftClientFactory determineTTranport(String protocolModel, String transportModel, DriftServerNode serverNode, DriftClientPoolProperties properties) {
+    public static io.airlift.drift.client.DriftClientFactory determineTTranportAndProtocol(String protocolModel, String transportModel, DriftServerNode serverNode, DriftClientPoolProperties properties) {
         DriftNettyClientConfig driftNettyClientConfig = new DriftNettyClientConfig();
         Double connectTimeout = null;
         Double requestTimeout = null;
@@ -59,6 +62,7 @@ public class DriftClientFactory {
         }
         driftNettyClientConfig.setConnectTimeout(new Duration(connectTimeout, TimeUnit.MILLISECONDS));
         driftNettyClientConfig.setRequestTimeout(new Duration(requestTimeout, TimeUnit.MILLISECONDS));
+
         switch (protocolModel) {
             case DriftProtocolModel.PROTOCOL_BINARY:
                 driftNettyClientConfig.setProtocol(Protocol.BINARY);
@@ -106,11 +110,11 @@ public class DriftClientFactory {
         return clientFactory;
     }
 
-    public static io.airlift.drift.client.DriftClientFactory determineTTranport(String protocolModel, String transportModel, DriftServerNode serverNode) {
+    public static io.airlift.drift.client.DriftClientFactory determineTTranportAndProtocol(String protocolModel, String transportModel, DriftServerNode serverNode) {
         /**
-         *默认重试10次
+         * default try doing 10 times
          */
-        return determineTTranport(protocolModel, transportModel, serverNode, null);
+        return determineTTranportAndProtocol(protocolModel, transportModel, serverNode, null);
     }
 
 
