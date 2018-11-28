@@ -26,8 +26,8 @@ public class DriftStarterJmeterApplicationTests {
     static final long MINUTE = 5L;
     static final long SECOND = MINUTE * 60;
     static final long MILLISECOND = MINUTE * 60 * 1000;
-    static final int THREAD_COUNT = 200;
-    public static final long PERIOD = 400L;
+    static final int THREAD_COUNT = 10;
+    public static final long PERIOD = 14L;
     public static final long TOTAL_JOB_COUNT = (MILLISECOND) / PERIOD;
     static final Long BEGIN_NAME = System.currentTimeMillis();
 

@@ -9,6 +9,7 @@ import com.naah69.rpc.drift.client.common.DriftServerNode;
 import com.naah69.rpc.drift.client.common.DriftServiceSignature;
 import com.naah69.rpc.drift.client.exception.DriftClientException;
 import com.naah69.rpc.drift.client.exception.DriftClientRegistryException;
+import com.naah69.rpc.drift.client.exception.DriftClientServerNodeListException;
 import com.naah69.rpc.drift.client.loadbalancer.DriftLoadBalancerFactory;
 import com.naah69.rpc.drift.client.loadbalancer.DriftRoundRobinRule;
 import com.naah69.rpc.drift.client.loadbalancer.ILoadBalancer;
@@ -117,7 +118,7 @@ public class DriftClientAdvice implements MethodInterceptor {
         if (thriftReferAnnotation==null){
             LOGGER.warn("can't find Annotation ThriftRefer from caller");
         }
-        String version = thriftReferAnnotation.version();
+        String version = thriftReferAnnotation!=null?thriftReferAnnotation.version():"";
 
         /**
          * 获取对象池配置
@@ -139,7 +140,9 @@ public class DriftClientAdvice implements MethodInterceptor {
          */
         DriftServerNode serverNode = loadBalancer.chooseServerNode(serviceName);
         if (serverNode == null) {
-            LOGGER.warn("cant't find serverNode. serviceId:{},version:{}", serviceId, version);
+            DriftClientServerNodeListException driftClientServerNodeListException = new DriftClientServerNodeListException("cant't find serverNode");
+            LOGGER.warn("cant't find serverNode. serviceId:{},version:{}", serviceId, version,driftClientServerNodeListException);
+            throw driftClientServerNodeListException;
         }
         /**
          * 生成服务签名信息
@@ -173,6 +176,7 @@ public class DriftClientAdvice implements MethodInterceptor {
                 serverNode = loadBalancer.chooseServerNode(serviceName);
                 if (serverNode == null) {
                     LOGGER.warn("cant't find serverNode. serviceId:{},version:{}", serviceId, version);
+                    continue;
                 }
 
                 LOGGER.warn("{}th try request. old host:{} , new host:{} ; old port:{} , new port:{} ,version:{}", retryTimes,oldHost,serverNode.getHost(),oldPort,serverNode.getPort(), version);

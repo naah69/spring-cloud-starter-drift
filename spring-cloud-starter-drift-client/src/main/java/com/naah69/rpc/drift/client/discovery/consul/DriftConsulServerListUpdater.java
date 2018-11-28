@@ -91,7 +91,7 @@ public class DriftConsulServerListUpdater implements IServerListUpdater {
                 try {
                     shutdownExecutorPool();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LOGGER.error("shutdown executor pool error.",e);
                 }
 
             });

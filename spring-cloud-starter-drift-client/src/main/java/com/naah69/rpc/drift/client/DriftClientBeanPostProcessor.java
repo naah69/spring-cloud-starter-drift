@@ -227,7 +227,7 @@ public class DriftClientBeanPostProcessor implements BeanPostProcessor, Applicat
              */
             TargetSource targetSource = ((Advised) target).getTargetSource();
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Target object {} uses cglib proxy");
+                LOGGER.debug("Target object {} uses cglib proxy",targetSource.getTargetClass());
             }
 
             try {
@@ -253,7 +253,7 @@ public class DriftClientBeanPostProcessor implements BeanPostProcessor, Applicat
              */
             TargetSource targetSource = ((Advised) target).getTargetSource();
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Target object {} uses jdk dynamic proxy");
+                LOGGER.debug("Target object {} uses jdk dynamic proxy",targetSource.getTargetClass());
             }
 
             try {

@@ -37,6 +37,7 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
 
     private static DriftConsulServerNodeListController serverNodeListController = null;
 
+
     /**
      * 单例模式创建对象
      * Singleton pattern to create Object
@@ -44,13 +45,9 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
      * @param client
      * @return
      */
-    public static AbstractDriftServerNodeListController singleton(ConsulClient client) {
+    public synchronized static AbstractDriftServerNodeListController singleton(ConsulClient client) {
         if (serverNodeListController == null) {
-            synchronized (DriftConsulServerNodeListController.class) {
-                if (serverNodeListController == null) {
-                    serverNodeListController = new DriftConsulServerNodeListController(client);
-                }
-            }
+            serverNodeListController = new DriftConsulServerNodeListController(client);
         }
         return serverNodeListController;
     }
@@ -113,19 +110,12 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
                 List<DriftConsulServerNode> serverNodes = Lists.newLinkedList();
                 for (DriftConsulServerNode driftNode : serverNodeSet) {
 
-                    if (StringUtils.isNotBlank(version) && driftNode.getTags().contains(version)) {
-                        /**
-                         * 有版本号
-                         * if it has version
-                         */
-                        serverNodes.add(driftNode);
-                    } else if (StringUtils.isBlank(version) && (driftNode.getTags() == null || driftNode.getTags().size() == 0)) {
-                        /**
-                         * 没有版本号
-                         * no version
-                         */
-                        serverNodes.add(driftNode);
+
+                    if (StringUtils.isBlank(version) && (driftNode.getTags() != null && driftNode.getTags().size() != 0)) {
+                        continue;
                     }
+
+                    serverNodes.add(driftNode);
                 }
 
                 return serverNodes;
@@ -271,10 +261,6 @@ public class DriftConsulServerNodeListController extends AbstractDriftServerNode
     private void filterAndCompoServerNodes(String version, List<DriftConsulServerNode> serverNodeList, List<HealthService> healthservicelist) {
         for (HealthService healthservice : healthservicelist) {
             DriftConsulServerNode serverNode = getThriftConsulServerNode(healthservice);
-
-            if (serverNode == null) {
-                continue;
-            }
 
             if (!serverNode.isHealth()) {
                 continue;

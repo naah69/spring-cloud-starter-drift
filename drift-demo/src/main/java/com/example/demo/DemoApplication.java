@@ -15,7 +15,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 @EnableDriftClient
 public class DemoApplication {
 
-    @ThriftRefer(version = "1.2.1")
+    @ThriftRefer(version = "1.2.0")
     public static NLU nlu;
 
     public static void main(String[] args) {
@@ -28,6 +28,6 @@ public class DemoApplication {
     }
 
     public static String parse() {
-        return nlu.parse("1001_2002", "1.0.0", "哈哈哈");
+        return nlu.parse("江苏源浩网房产", "default", "哈哈哈");
     }
 }

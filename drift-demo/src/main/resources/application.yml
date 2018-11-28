@@ -47,23 +47,23 @@ spring:
 #      transport-model: framed
       transport-model: framed
       #      序列化模型
-#      protocol-model: binary
-      protocol-model: compact
+      protocol-model: binary
+#      protocol-model: compact
       #      服务列表刷新时间
       refresh-interval: 30000
       pool:
         #        连接重试次数
-        retry-times: 1
+        retry-times: 0
         #        连接超时时间
-        connect-timeout: 2000
+        connect-timeout: 2000000
         #        请求超时时间
         request-timeout: 2000
         #        最大连接数
-        pool-max-total-per-key: 400
+        pool-max-total-per-key: 1
         #        最大空闲数
-        pool-max-idle-per-key: 200
+        pool-max-idle-per-key: 1
         #        最小空闲数
-        pool-min-idle-per-key: 10
+        pool-min-idle-per-key: 1
         #        最大等待时间
         pool-max-wait: 3000
         #        创建时测试可用
